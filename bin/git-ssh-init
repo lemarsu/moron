@@ -64,9 +64,14 @@ else
   exit 2
 end
 
-dir = options[:directory]
+if File.exists?(File.expand_path("~/.ssh/authorized_keys"))
+  puts %[Error: File "~/.ssh/authorized_keys" already exists]
+  puts "It won't be overwritten"
+  exit 1
+end
+
+dir = File.expand_path("~/git-ssh-tempdir")
 FileUtils.mkdir_p dir
-FileUtils.mkdir_p File.join(dir, 'repositories')
 FileUtils.mkdir_p File.join(dir, 'keydir', options[:user])
 File.open(File.join(dir, 'git-ssh.conf'), "w") do |f|
   DATA.each_line do |l|
@@ -92,6 +97,27 @@ Dir.chdir(dir) do
   system 'git commit -m "First import"'
 end
 
+FileUtils.mkdir_p File.join(options[:directory], 'repositories')
+
+git_ssh_archive = File.join(options[:directory], 'repositories', 'git-ssh-admin.git')
+system "git", "clone", '--bare', dir, git_ssh_archive
+FileUtils.rm_rf dir
+
+post_update_file = File.join(git_ssh_archive, 'hooks', 'post-update')
+File.open post_update_file, 'w' do |f|
+  f.write <<EOF
+#!/bin/sh
+#
+
+git-ssh-hook
+
+EOF
+end
+FileUtils.chmod 0755, post_update_file
+
+hook = GitSsh::Hook.new git_ssh_archive
+hook.run
+
 __END__
 [global]
 directory = %%DIR%%
@@ -105,6 +131,10 @@ admin = %%USER%%
 @admin = c
 # @devs = w
 # @all =
+
+[/git-ssh-admin]
+@admin = w
+@all =
 
 # [/users/patrick]
 # patrick = c
