@@ -18,7 +18,7 @@ module GitSsh
 	files.each do |user, file|
 	  key = File.read(File.join(Dir.pwd, 'keydir', file))
 	  key_prefix = KEY_PREFIX.gsub('%u', user)
-	  f.puts [key_prefix, key].join
+	  f.puts [key_prefix, key] * ' '
 	end
       end
     end

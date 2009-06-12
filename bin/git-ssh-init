@@ -46,11 +46,6 @@ end
 full_user = pubkey_content.chomp.split(' ').last
 options[:user] ||= full_user.split('@').first
 
-if File.exists?(options[:directory])
-  puts %[Error: "#{options[:directory]}" already exists.]
-  exit 1
-end
-
 print "Searching for git... "
 git_path = ENV["PATH"].split(':').map do |p|
   "#{p}/git" if File.executable?("#{p}/git")
