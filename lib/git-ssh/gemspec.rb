@@ -27,7 +27,7 @@ module GitSsh
     spec.files              = spec.test_files + spec.extra_rdoc_files + 
       FileList["lib/**/*.rb", "resources/**/*"]
 
-    spec.executable         = spec.name
+    spec.executables        = [spec.name, "#{spec.name}-init", "#{spec.name}-hook"]
 
 
     # add dependencies
