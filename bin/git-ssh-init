@@ -1,0 +1,110 @@
+#!/usr/bin/env ruby
+
+begin
+  require 'git-ssh'
+rescue LoadError 
+  path = File.expand_path(File.join(File.dirname(__FILE__),"..","lib"))
+  raise if $:.include?(path)
+  $: << path
+  retry
+end
+
+require 'fileutils'
+
+options = {}
+
+parser = OptionParser.new do |o|
+  o.banner = "Usage: #$0 [options] <pubkey_file>"
+  
+  o.on('-d', '--directory PATH', 'The diretory to install git-ssh') do |dir|
+    options[:directory] = dir
+  end
+  o.on('-u', '--user USER', 'Default admin user') do |user|
+    options[:user] = user
+  end
+end
+
+pubkey = parser.parse!
+
+if ARGV.size != 1
+  puts parser.help
+  exit
+end
+
+options[:directory] ||= File.join(Dir.pwd, "git-ssh")
+
+pubkey = pubkey.first
+pubkey_content = nil
+
+begin
+  pubkey_content = File.read(pubkey)
+rescue Errno::ENOENT => ex
+  puts ex.message
+  exit 1
+end
+
+full_user = pubkey_content.chomp.split(' ').last
+options[:user] ||= full_user.split('@').first
+
+if File.exists?(options[:directory])
+  puts %[Error: "#{options[:directory]}" already exists.]
+  exit 1
+end
+
+print "Searching for git... "
+git_path = ENV["PATH"].split(':').map do |p|
+  "#{p}/git" if File.executable?("#{p}/git")
+end.compact.first
+
+if git_path
+  puts "ok"
+else
+  puts "error"
+  puts "Error: Couldn't find a git installation. Am I missing something ?"
+  exit 2
+end
+
+dir = options[:directory]
+FileUtils.mkdir_p dir
+FileUtils.mkdir_p File.join(dir, 'repositories')
+FileUtils.mkdir_p File.join(dir, 'keydir', options[:user])
+File.open(File.join(dir, 'git-ssh.conf'), "w") do |f|
+  DATA.each_line do |l|
+    l.gsub!(/%%(\w+)%%/) do |match|
+      case $1.to_sym
+      when :DIR
+	options[:directory]
+      when :USER
+	options[:user]
+      else match
+      end
+    end
+    f.puts l
+  end
+end
+File.open(File.join(dir, 'keydir', options[:user], "#{full_user}.pub"), 'w') do |f|
+  f.write pubkey_content
+end
+
+Dir.chdir(dir) do
+  system 'git init'
+  system 'git add .'
+  system 'git commit -m "First import"'
+end
+
+__END__
+[global]
+directory = %%DIR%%
+
+[groups]
+# devs = bob alice john
+# clients = albert britney
+admin = %%USER%%
+
+[/]
+@admin = c
+# @devs = w
+# @all =
+
+# [/users/patrick]
+# patrick = c
