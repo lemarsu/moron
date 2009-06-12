@@ -16,13 +16,23 @@ class GitSsh::Command
   end
 
   def run
+    unless File.exists?(full_path)
+      # up_dir = File.dirname(full_path)
+      FileUtils.mkdir_p full_path
+      Dir.chdir full_path do
+	system %w[git init --bare]
+      end
+    end
     exec *command_line
     STDERR.puts "Exec sucked!"
   end
 
+  def full_path
+    @options.chroot ? File.join(@options.chroot, @path) : @path
+  end
+
   def command_line
-    path = @options.chroot ? File.join(@options.chroot, @path) : @path
-    [@command, path]
+    [@command, full_path]
   end
 
   private
