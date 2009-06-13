@@ -12,6 +12,28 @@ end
 require 'fileutils'
 require 'stringio'
 
+CONFIG_SAMPLE = <<EOF
+[global]
+directory = %%DIR%%
+
+[groups]
+# devs = bob alice john
+# clients = albert britney
+admin = %%USER%%
+
+[/]
+@admin = c
+# @devs = w
+# @all =
+
+[/git-ssh-admin]
+@admin = w
+@all =
+
+# [/users/patrick]
+# patrick = c
+EOF
+
 options = {}
 
 parser = OptionParser.new do |o|
@@ -86,7 +108,7 @@ try("Creating temporary archive") do |out|
   begin
     FileUtils.mkdir_p File.join(dir, 'keydir', options[:user])
     File.open(File.join(dir, 'git-ssh.conf'), "w") do |f|
-      DATA.each_line do |l|
+      CONFIG_SAMPLE.each_line do |l|
 	l.gsub!(/%%(\w+)%%/) do |match|
 	  case $1.to_sym
 	  when :DIR
@@ -136,24 +158,3 @@ try("Running hook for the first time") do |out|
   hook.run
   true
 end
-
-__END__
-[global]
-directory = %%DIR%%
-
-[groups]
-# devs = bob alice john
-# clients = albert britney
-admin = %%USER%%
-
-[/]
-@admin = c
-# @devs = w
-# @all =
-
-[/git-ssh-admin]
-@admin = w
-@all =
-
-# [/users/patrick]
-# patrick = c
