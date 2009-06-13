@@ -77,7 +77,10 @@ end
 
 git_ssh_archive = File.join(options[:directory], 'git-ssh-admin.git')
 try("Creating temporary archive") do |out|
-
+  if File.exists? git_ssh_archive
+    out.puts "Error: Archive git-ssh-admin.git already exist!"
+    next
+  end
   dir = File.expand_path("~/git-ssh-tempdir")
   FileUtils.mkdir_p dir
   begin
