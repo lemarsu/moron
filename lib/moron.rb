@@ -1,4 +1,4 @@
-module GitSsh
+module Moron
 
   ROOT_DIR        = File.expand_path(File.join(File.dirname(__FILE__),".."))
   LIB_DIR         = File.join(ROOT_DIR,"lib").freeze
@@ -20,4 +20,4 @@ module GitSsh
 
 end
 
-GitSsh.require_all_libs_relative_to(__FILE__)
+Moron.require_all_libs_relative_to(__FILE__)

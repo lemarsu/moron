@@ -7,7 +7,7 @@ require 'rake/clean'
 require 'rake/rdoctask'
 require 'rake/contrib/sshpublisher'
 
-require 'git-ssh'
+require 'moron'
 
 load 'tasks/setup.rb'
 

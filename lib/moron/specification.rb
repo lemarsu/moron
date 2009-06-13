@@ -2,9 +2,9 @@ require 'rubygems'
 require 'rubygems/specification'
 require 'rake'
 
-module GitSsh 
+module Moron 
   # Add some additional items to Gem::Specification
-  # A GitSsh::Specification adds additional pieces of information the
+  # A Moron::Specification adds additional pieces of information the
   # typical gem specification
   class Specification 
 

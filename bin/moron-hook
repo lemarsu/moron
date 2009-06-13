@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 begin
-  require 'git-ssh'
+  require 'moron'
 rescue LoadError 
   path = File.expand_path(File.join(File.dirname(__FILE__),"..","lib"))
   raise if $:.include?(path)
@@ -9,4 +9,4 @@ rescue LoadError
   retry
 end
 
-GitSsh::Hook.new(Dir.pwd).run
+Moron::Hook.new(Dir.pwd).run

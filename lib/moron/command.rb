@@ -1,6 +1,6 @@
 require 'optparse'
 
-class GitSsh::Command
+class Moron::Command
 
   COMMANDS_RE = /^(git-(?:receive|upload)-pack) '(.*)'$/o
   SSH_COMMAND = 'SSH_ORIGINAL_COMMAND'
@@ -58,7 +58,7 @@ class GitSsh::Command
       end
       o.on('-v', '--verbose', 'Be verbose') { @options.verbose = true }
       o.on('-V', '--version', 'Get the version') do
-	puts "#$0 v#{GitSsh::VERSION}"
+	puts "#$0 v#{Moron::VERSION}"
 	exit 0
       end
     end

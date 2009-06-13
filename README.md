@@ -1,10 +1,10 @@
-== git-ssh
+== moron
 
-<tt>git-ssh</tt> is a proxy to serve git repositories over ssh.
+<tt>moron</tt> is a proxy to serve git repositories over ssh.
 
 == DESCRIPTION
 
-<tt>git-ssh</tt> can force your ssh server to handle only git requests. You can
+<tt>moron</tt> can force your ssh server to handle only git requests. You can
 allow your users to pull or push, but not to login or to do scf or sftp.
 
 == FEATURES
@@ -34,13 +34,13 @@ Prepare for ssh keys
 
 When you have to add a key in the <tt>~git/.ssh/authorized_keys</tt>, simply add at the beginning of the line :
 
-  command="/usr/bin/git-ssh -r /var/git lemarsu"
+  command="/usr/bin/moron -r /var/git lemarsu"
 
 For example:
 
-  command="/usr/bin/git-ssh -r /var/git lemarsu" ssh-dss ... lemarsu@zorglub
+  command="/usr/bin/moron -r /var/git lemarsu" ssh-dss ... lemarsu@zorglub
 
-The <tt>-r</tt> option ask <tt>git-ssh</tt> to chroot the folder <tt>/var/git</tt>. This way, the
+The <tt>-r</tt> option ask <tt>moron</tt> to chroot the folder <tt>/var/git</tt>. This way, the
 users cannot get away from the directory of repositories.
 
 == CREDITS

@@ -4,7 +4,7 @@
 #     rubytalk.
 #-----------------------------------------------------------------------
 def changes
-  change_file = File.expand_path(File.join(GitSsh::ROOT_DIR,"CHANGES"))
+  change_file = File.expand_path(File.join(Moron::ROOT_DIR,"CHANGES"))
   sections    = File.read(change_file).split(/^(?===)/)
 end
 
@@ -13,13 +13,13 @@ def last_changeset
 end
 
 def announcement
-  urls    = "  #{GitSsh::SPEC.homepage}"
-  subject = "#{GitSsh::SPEC.name} #{GitSsh::VERSION} Released"
-  title   = "#{GitSsh::SPEC.name} version #{GitSsh::VERSION} has been released."
+  urls    = "  #{Moron::SPEC.homepage}"
+  subject = "#{Moron::SPEC.name} #{Moron::VERSION} Released"
+  title   = "#{Moron::SPEC.name} version #{Moron::VERSION} has been released."
   body    = <<BODY
-  #{GitSsh::SPEC.description.rstrip}
+  #{Moron::SPEC.description.rstrip}
 
-{{ Changelog for Version #{GitSsh::VERSION} }}
+{{ Changelog for Version #{Moron::VERSION} }}
 
   #{last_changeset.rstrip}
 
@@ -34,7 +34,7 @@ namespace :announce do
     subject, title, body, urls = announcement
 
     File.open("email.txt", "w") do |mail|
-      mail.puts "From: #{GitSsh::SPEC.author} <#{GitSsh::SPEC.email}>"
+      mail.puts "From: #{Moron::SPEC.author} <#{Moron::SPEC.email}>"
       mail.puts "To: ruby-talk@ruby-lang.org"
       mail.puts "Date: #{Time.now.rfc2822}"
       mail.puts "Subject: [ANN] #{subject}"

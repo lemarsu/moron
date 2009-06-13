@@ -1,4 +1,8 @@
-= git-ssh Changelog
+= moron Changelog
+
+=== Version 0.5.0
+
+* Renamed from git-ssh to moron
 
 === Version 0.4.0
 

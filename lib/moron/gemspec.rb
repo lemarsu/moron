@@ -1,21 +1,21 @@
 require 'rubygems'
-require 'git-ssh/specification'
-require 'git-ssh/version'
+require 'moron/specification'
+require 'moron/version'
 require 'rake'
 
-# The Gem Specification plus some extras for git-ssh.
-module GitSsh
-  SPEC = GitSsh::Specification.new do |spec|
-    spec.name               = "git-ssh"
-    spec.version            = GitSsh::VERSION
-    spec.rubyforge_project  = "git-ssh"
+# The Gem Specification plus some extras for moron.
+module Moron
+  SPEC = Moron::Specification.new do |spec|
+    spec.name               = "moron"
+    spec.version            = Moron::VERSION
+    spec.rubyforge_project  = "moron"
     spec.author             = "LeMarsu"
     spec.email              = "ch.ruelle@lemarsu.com"
-    spec.homepage           = "http://git-ssh.rubyforge.org/"
+    spec.homepage           = "http://moron.rubyforge.org/"
 
-    spec.summary            = "A Summary of git-ssh."
+    spec.summary            = "A Summary of moron."
     spec.description        = <<-DESC
-		A longer more detailed description of git-ssh.
+		A longer more detailed description of moron.
 		DESC
 
     spec.extra_rdoc_files   = FileList["[A-Z]*"]
