@@ -3,6 +3,8 @@
 === Version 0.5.0
 
 * Renamed from git-ssh to moron
+* moron-hook has been rewritten to use git gem. Pushing keys won't need a temporary directory anymore.
+* Added git dependency.
 
 === Version 0.4.0
 
