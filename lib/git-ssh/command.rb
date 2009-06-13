@@ -20,7 +20,7 @@ class GitSsh::Command
       # up_dir = File.dirname(full_path)
       FileUtils.mkdir_p full_path
       Dir.chdir full_path do
-	system %w[git init --bare]
+	system %[git init --bare > /dev/null]
       end
     end
     exec *command_line
