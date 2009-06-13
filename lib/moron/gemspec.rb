@@ -32,6 +32,8 @@ module Moron
 
     # add dependencies
     # spec.add_dependency("somegem", ">= 0.4.2")
+    spec.add_dependency('git', '>= 1.0.5')
+    spec.add_dependency('rake', '>= 0.8.4')
 
     spec.platform           = Gem::Platform::RUBY
 
