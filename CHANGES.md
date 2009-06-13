@@ -1,5 +1,11 @@
 = git-ssh Changelog
 
+=== Version 0.4.0
+
+* Added creation on demand of repositories
+* Default folder is now ~/repositories. If a folder is specified, there won't be a folder "reposiories" in it.
+* git-ssh-init has a much better output.
+
 === Version 0.3.0
 
 * Added a git-ssh-init command

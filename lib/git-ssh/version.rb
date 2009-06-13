@@ -1,7 +1,7 @@
 module GitSsh
   class Version
     MAJOR   = 0
-    MINOR   = 3
+    MINOR   = 4
     BUILD   = 0
 
     class << self
