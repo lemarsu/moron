@@ -10,6 +10,7 @@ rescue LoadError
 end
 
 require 'fileutils'
+require 'stringio'
 
 options = {}
 
@@ -44,74 +45,94 @@ rescue Errno::ENOENT => ex
   exit 1
 end
 
+def try(prompt)
+  print prompt, '... '
+  io = StringIO.new
+  ret = yield io
+  if ret
+    puts "ok"
+  else
+    puts "error"
+    puts io.string
+    exit 1
+  end
+  ret
+end
+
 full_user = pubkey_content.chomp.split(' ').last
 options[:user] ||= full_user.split('@').first
 
-print "Searching for git... "
-git_path = ENV["PATH"].split(':').map do |p|
-  "#{p}/git" if File.executable?("#{p}/git")
-end.compact.first
-
-if git_path
-  puts "ok"
-else
-  puts "error"
-  puts "Error: Couldn't find a git installation. Am I missing something ?"
-  exit 2
+git_path = try("Searching for git") do |out|
+  out.puts "Error: Couldn't find a git installation. Am I missing something ?"
+  ENV["PATH"].split(':').map do |p|
+    "#{p}/git" if File.executable?("#{p}/git")
+  end.compact.first
 end
 
-if File.exists?(File.expand_path("~/.ssh/authorized_keys"))
-  puts %[Error: File "~/.ssh/authorized_keys" already exists]
-  puts "It won't be overwritten"
-  exit 1
+try("Verify absence of authorized_keys file") do |out|
+  out.puts %[Error: File "~/.ssh/authorized_keys" already exists]
+  out.puts "It won't be overwritten"
+  !File.exists?(File.expand_path("~/.ssh/authorized_keys"))
 end
 
-dir = File.expand_path("~/git-ssh-tempdir")
-FileUtils.mkdir_p dir
-FileUtils.mkdir_p File.join(dir, 'keydir', options[:user])
-File.open(File.join(dir, 'git-ssh.conf'), "w") do |f|
-  DATA.each_line do |l|
-    l.gsub!(/%%(\w+)%%/) do |match|
-      case $1.to_sym
-      when :DIR
-	options[:directory]
-      when :USER
-	options[:user]
-      else match
+git_ssh_archive = File.join(options[:directory], 'git-ssh-admin.git')
+try("Creating temporary archive") do |out|
+
+  dir = File.expand_path("~/git-ssh-tempdir")
+  FileUtils.mkdir_p dir
+  begin
+    FileUtils.mkdir_p File.join(dir, 'keydir', options[:user])
+    File.open(File.join(dir, 'git-ssh.conf'), "w") do |f|
+      DATA.each_line do |l|
+	l.gsub!(/%%(\w+)%%/) do |match|
+	  case $1.to_sym
+	  when :DIR
+	    options[:directory]
+	  when :USER
+	    options[:user]
+	  else match
+	  end
+	end
+	f.puts l
       end
     end
-    f.puts l
+    File.open(File.join(dir, 'keydir', options[:user], "#{full_user}.pub"), 'w') do |f|
+      f.write pubkey_content
+    end
+
+    Dir.chdir(dir) do
+      system 'git init >/dev/null'
+      system 'git add . >/dev/null'
+      system 'git commit -m "First import" >/dev/null'
+    end
+
+    FileUtils.mkdir_p options[:directory]
+    system "git clone --bare '#{dir}' '#{git_ssh_archive}' > /dev/null"
+  ensure
+    FileUtils.rm_rf dir
   end
-end
-File.open(File.join(dir, 'keydir', options[:user], "#{full_user}.pub"), 'w') do |f|
-  f.write pubkey_content
+  true
 end
 
-Dir.chdir(dir) do
-  system 'git init'
-  system 'git add .'
-  system 'git commit -m "First import"'
-end
-
-FileUtils.mkdir_p options[:directory]
-git_ssh_archive = File.join(options[:directory], 'git-ssh-admin.git')
-system "git", "clone", '--bare', dir, git_ssh_archive
-FileUtils.rm_rf dir
-
-post_update_file = File.join(git_ssh_archive, 'hooks', 'post-update')
-File.open post_update_file, 'w' do |f|
-  f.write <<EOF
+try("Adding hook file") do |out|
+  post_update_file = File.join(git_ssh_archive, 'hooks', 'post-update')
+  File.open post_update_file, 'w' do |f|
+    f.write <<EOF
 #!/bin/sh
 #
 
 git-ssh-hook
 
 EOF
+  end
+  FileUtils.chmod 0755, post_update_file
 end
-FileUtils.chmod 0755, post_update_file
 
-hook = GitSsh::Hook.new git_ssh_archive
-hook.run
+try("Running hook for the first time") do |out|
+  hook = GitSsh::Hook.new git_ssh_archive
+  hook.run
+  true
+end
 
 __END__
 [global]

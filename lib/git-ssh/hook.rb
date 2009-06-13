@@ -35,8 +35,7 @@ module GitSsh
 
     def in_temp_dir(&blk)
       temp_dir = File.join(@path, 'tempdir')
-      # fork
-      system "git", "clone", @path, temp_dir
+      system "git clone '#@path' '#{temp_dir}' > /dev/null"
       Dir.chdir temp_dir, &blk
     ensure
       FileUtils.rm_rf temp_dir
