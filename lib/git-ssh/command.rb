@@ -17,7 +17,6 @@ class GitSsh::Command
 
   def run
     unless File.exists?(full_path)
-      # up_dir = File.dirname(full_path)
       FileUtils.mkdir_p full_path
       Dir.chdir full_path do
 	system %[git init --bare > /dev/null]
