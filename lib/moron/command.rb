@@ -16,7 +16,7 @@ class Moron::Command
   end
 
   def run
-    create_git_archive(full_path) unless File.exists?(full_path)
+    create_git_archive(full_path) if git_archive_needed?(full_path)
     exec *command_line
     STDERR.puts "Exec sucked!"
   end
@@ -64,6 +64,14 @@ class Moron::Command
 	exit 0
       end
     end
+  end
+
+  def git_archive_needed?(path)
+    !File.exists?(path) and receiving_data?
+  end
+
+  def receiving_data?
+    @command == "git-receive-pack"
   end
 
   def parse_ssh_original_command
