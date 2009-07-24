@@ -16,12 +16,7 @@ class Moron::Command
   end
 
   def run
-    unless File.exists?(full_path)
-      FileUtils.mkdir_p full_path
-      Dir.chdir full_path do
-	system %[git init --bare > /dev/null]
-      end
-    end
+    create_git_archive(full_path) unless File.exists?(full_path)
     exec *command_line
     STDERR.puts "Exec sucked!"
   end
@@ -44,6 +39,13 @@ class Moron::Command
     raise UsageError, "#$0 usage: #$0 <user>" unless
       args_left.size == 1 && args_left.first =~ /^\w+$/
     @user = @args.first
+  end
+
+  def create_git_archive(path)
+    FileUtils.mkdir_p path
+    Dir.chdir path do
+      system %[git init --bare > /dev/null]
+    end
   end
 
   def get_parser
