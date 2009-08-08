@@ -1,5 +1,10 @@
 = moron Changelog
 
+=== Version 0.5.1
+
+* FIX When making a clone of an non existing archive, moron won't create empty archive anymore.
+* moron-hook now writes the full path of moron binary.
+
 === Version 0.5.0
 
 * Renamed from git-ssh to moron

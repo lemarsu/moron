@@ -2,7 +2,7 @@ module Moron
   class Version
     MAJOR   = 0
     MINOR   = 5
-    BUILD   = 0
+    BUILD   = 1
 
     class << self
       def to_a
