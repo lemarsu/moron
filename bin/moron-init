@@ -153,7 +153,7 @@ EOF
 end
 
 try("Running hook for the first time") do |out|
-  hook = Moron::Hook.new git_ssh_archive
+  hook = Moron::Hook.new git_ssh_archive, __FILE__
   hook.run
   true
 end

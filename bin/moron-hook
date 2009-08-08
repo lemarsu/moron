@@ -9,4 +9,4 @@ rescue LoadError
   retry
 end
 
-Moron::Hook.new(Dir.pwd).run
+Moron::Hook.new(Dir.pwd, __FILE__).run
